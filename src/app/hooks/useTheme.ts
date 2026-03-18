@@ -14,28 +14,33 @@ export type Theme = {
   id: string;
   kind: ThemeKind;
   classNames: string[];
+  themeColor: string;
 };
 
 export const LightTheme: Theme = {
   id: 'light-theme',
   kind: ThemeKind.Light,
   classNames: [lightTheme, onLightFontWeight, 'prism-light'],
+  themeColor: '#ffffff',
 };
 
 export const SilverTheme: Theme = {
   id: 'silver-theme',
   kind: ThemeKind.Light,
   classNames: ['silver-theme', silverTheme, onLightFontWeight, 'prism-light'],
+  themeColor: '#dedede',
 };
 export const DarkTheme: Theme = {
   id: 'dark-theme',
   kind: ThemeKind.Dark,
   classNames: ['dark-theme', darkTheme, onDarkFontWeight, 'prism-dark'],
+  themeColor: '#1a1a1a',
 };
 export const ButterTheme: Theme = {
   id: 'butter-theme',
   kind: ThemeKind.Dark,
   classNames: ['butter-theme', butterTheme, onDarkFontWeight, 'prism-dark'],
+  themeColor: '#1a1916',
 };
 
 export const useThemes = (): Theme[] => {

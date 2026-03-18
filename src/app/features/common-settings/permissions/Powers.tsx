@@ -10,6 +10,8 @@ import {
   PopOut,
   Menu,
   Scroll,
+  Tooltip,
+  TooltipProvider,
   toRem,
   config,
   color,
@@ -106,12 +108,20 @@ type PowersProps = {
   powerLevels: IPowerLevels;
   permissionGroups: PermissionGroup[];
   onEdit?: () => void;
+  /**
+   * When provided, display these tags instead of the room's tags.
+   * Used when a template is loaded to preview its labels before applying.
+   */
+  overrideTags?: import('../../../hooks/usePowerLevelTags').PowerLevelTags;
+  /** When true, shows a notice that labels are a preview from a loaded template */
+  templateTagsNotice?: boolean;
 };
-export function Powers({ powerLevels, permissionGroups, onEdit }: PowersProps) {
+export function Powers({ powerLevels, permissionGroups, onEdit, overrideTags, templateTagsNotice }: PowersProps) {
   const mx = useMatrixClient();
   const useAuthentication = useMediaAuthentication();
   const room = useRoom();
-  const powerLevelTags = usePowerLevelTags(room, powerLevels);
+  const roomPowerLevelTags = usePowerLevelTags(room, powerLevels);
+  const powerLevelTags = overrideTags ?? roomPowerLevelTags;
   const creators = useRoomCreators(room);
   const creatorsTag = useRoomCreatorsTag();
   const creatorTagIconSrc =
@@ -119,6 +129,19 @@ export function Powers({ powerLevels, permissionGroups, onEdit }: PowersProps) {
 
   return (
     <Box direction="Column" gap="100">
+      {templateTagsNotice && (
+        <Box
+          style={{
+            padding: '8px 12px',
+            background: 'var(--cpd-color-bg-info-subtle)',
+            borderRadius: '6px',
+          }}
+        >
+          <Text size="T200">
+            <b>Preview:</b> These labels will be applied from the template.
+          </Text>
+        </Box>
+      )}
       {creators.size > 0 && (
         <SequenceCard
           variant="SurfaceVariant"
@@ -160,16 +183,41 @@ export function Powers({ powerLevels, permissionGroups, onEdit }: PowersProps) {
           after={
             onEdit && (
               <Box gap="200">
-                <Button
-                  variant="Secondary"
-                  fill="Soft"
-                  size="300"
-                  radii="300"
-                  outlined
-                  onClick={onEdit}
-                >
-                  <Text size="B300">Edit</Text>
-                </Button>
+                {templateTagsNotice ? (
+                  <TooltipProvider
+                    tooltip={
+                      <Tooltip>
+                        <Text size="T200">Apply the blueprint first, then edit labels.</Text>
+                      </Tooltip>
+                    }
+                  >
+                    {(ref) => (
+                      <Button
+                        ref={ref}
+                        variant="Secondary"
+                        fill="Soft"
+                        size="300"
+                        radii="300"
+                        outlined
+                        disabled
+                        onClick={onEdit}
+                      >
+                        <Text size="B300">Edit</Text>
+                      </Button>
+                    )}
+                  </TooltipProvider>
+                ) : (
+                  <Button
+                    variant="Secondary"
+                    fill="Soft"
+                    size="300"
+                    radii="300"
+                    outlined
+                    onClick={onEdit}
+                  >
+                    <Text size="B300">Edit</Text>
+                  </Button>
+                )}
               </Box>
             )
           }

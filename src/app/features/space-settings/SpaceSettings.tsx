@@ -17,6 +17,7 @@ import { Members } from '../common-settings/members';
 import { DeveloperTools } from '../common-settings/developer-tools';
 import { General } from './general';
 import { Permissions } from './permissions';
+import { RoomTemplates } from './room-templates';
 
 type SpaceSettingsMenuItem = {
   page: SpaceSettingsPage;
@@ -41,6 +42,11 @@ const useSpaceSettingsMenuItems = (): SpaceSettingsMenuItem[] =>
         page: SpaceSettingsPage.PermissionsPage,
         name: 'Permissions',
         icon: Icons.Lock,
+      },
+      {
+        page: SpaceSettingsPage.RoomTemplatesPage,
+        name: 'Blueprints',
+        icon: Icons.File,
       },
       {
         page: SpaceSettingsPage.EmojisStickersPage,
@@ -161,6 +167,9 @@ export function SpaceSettings({ initialPage, requestClose }: SpaceSettingsProps)
       )}
       {activePage === SpaceSettingsPage.PermissionsPage && (
         <Permissions requestClose={handlePageRequestClose} />
+      )}
+      {activePage === SpaceSettingsPage.RoomTemplatesPage && (
+        <RoomTemplates requestClose={handlePageRequestClose} />
       )}
       {activePage === SpaceSettingsPage.EmojisStickersPage && (
         <EmojisStickers requestClose={handlePageRequestClose} />

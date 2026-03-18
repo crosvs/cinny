@@ -27,7 +27,7 @@ import { useMatrixClient } from '../../hooks/useMatrixClient';
 import { useMediaAuthentication } from '../../hooks/useMediaAuthentication';
 import { PowerColorBadge, PowerIcon } from '../power';
 import { useGetMemberPowerLevel, usePowerLevels } from '../../hooks/usePowerLevels';
-import { getPowers, usePowerLevelTags } from '../../hooks/usePowerLevelTags';
+import { getPowerLevelTag, getPowers, usePowerLevelTags } from '../../hooks/usePowerLevelTags';
 import { stopPropagation } from '../../utils/keyboard';
 import { StateEvent } from '../../../types/matrix/room';
 import { useOpenRoomSettings } from '../../state/hooks/roomSettings';
@@ -144,7 +144,13 @@ function SharedPowerAlert({ power, onCancel, onChange }: SharedPowerAlertProps) 
   );
 }
 
-export function PowerChip({ userId }: { userId: string }) {
+export function PowerChip({
+  userId,
+  onChanged,
+}: {
+  userId: string;
+  onChanged?: (newPower: number, tagName: string) => void;
+}) {
   const mx = useMatrixClient();
   const room = useRoom();
   const space = useSpaceOptionally();
@@ -182,8 +188,9 @@ export function PowerChip({ userId }: { userId: string }) {
     useCallback(
       async (power: number) => {
         await mx.setPowerLevel(room.roomId, userId, power);
+        onChanged?.(power, getPowerLevelTag(powerLevelTags, power).name ?? '');
       },
-      [mx, userId, room]
+      [mx, userId, room, onChanged, powerLevelTags]
     )
   );
   const changing = powerState.status === AsyncStatus.Loading;
@@ -194,7 +201,11 @@ export function PowerChip({ userId }: { userId: string }) {
   const handlePowerSelect = (power: number): void => {
     close();
     if (!canChangePowers) return;
-    if (power === getMemberPowerLevel(userId)) return;
+    if (power === getMemberPowerLevel(userId)) {
+      // No change in this room, but still trigger broadcast check for other rooms.
+      onChanged?.(power, getPowerLevelTag(powerLevelTags, power).name ?? '');
+      return;
+    }
 
     if (userId === mx.getSafeUserId()) {
       setSelfDemote(power);

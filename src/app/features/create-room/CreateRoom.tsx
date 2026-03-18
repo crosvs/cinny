@@ -99,6 +99,8 @@ export function CreateRoomForm({
   const allowKnockRestricted =
     access === CreateRoomAccess.Restricted && knockRestrictedSupported(selectedRoomVersion);
 
+  const currentRoomType = type === CreateRoomType.VoiceRoom ? RoomType.Call : null;
+
   const handleRoomVersionChange = (version: string) => {
     if (!restrictedSupported(version)) {
       setAccess(CreateRoomAccess.Private);
@@ -207,6 +209,7 @@ export function CreateRoomForm({
       </Box>
 
       {access === CreateRoomAccess.Public && <CreateRoomAliasInput disabled={disabled} />}
+
 
       <Box shrink="No" direction="Column" gap="100">
         <Box gap="200" alignItems="End">

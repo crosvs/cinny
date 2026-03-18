@@ -3,11 +3,16 @@ import { configClass, varsClass } from 'folds';
 import {
   DarkTheme,
   LightTheme,
+  Theme,
   ThemeContextProvider,
   ThemeKind,
   useActiveTheme,
   useSystemThemeKind,
 } from '../hooks/useTheme';
+
+function applyThemeColor(color: string) {
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
+}
 import { useSetting } from '../state/hooks/settings';
 import { settingsAtom } from '../state/settings';
 
@@ -19,9 +24,11 @@ export function UnAuthRouteThemeManager() {
     document.body.classList.add(configClass, varsClass);
     if (systemThemeKind === ThemeKind.Dark) {
       document.body.classList.add(...DarkTheme.classNames);
+      applyThemeColor(DarkTheme.themeColor);
     }
     if (systemThemeKind === ThemeKind.Light) {
       document.body.classList.add(...LightTheme.classNames);
+      applyThemeColor(LightTheme.themeColor);
     }
   }, [systemThemeKind]);
 
@@ -37,6 +44,7 @@ export function AuthRouteThemeManager({ children }: { children: ReactNode }) {
     document.body.classList.add(configClass, varsClass);
 
     document.body.classList.add(...activeTheme.classNames);
+    applyThemeColor(activeTheme.themeColor);
 
     if (monochromeMode) {
       document.body.style.filter = 'grayscale(1)';

@@ -35,6 +35,8 @@ jobs:
         env:
           NODE_OPTIONS: '--max_old_space_size=4096'
         run: npm run build -- --base=${{ steps.pages.outputs.base_path }}/
+      - name: Copy index.html to 404.html for SPA routing
+        run: cp dist/index.html dist/404.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
